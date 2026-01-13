@@ -1,5 +1,6 @@
 package taskflow.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,10 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(
+            summary = "Create a token login",
+            description = "Create a token login with login"
+    )
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         System.out.println("🔥 LOGIN ENDPOINT ALCANZADO");

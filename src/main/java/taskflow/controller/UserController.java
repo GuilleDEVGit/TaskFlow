@@ -1,5 +1,6 @@
 package taskflow.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +21,31 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+
+    @Operation(
+            summary = "Get all users",
+            description = "Requires roles: ADMIN"
+    )
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public List<User> getAll() {
         return userService.getAllUsers();
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(
+            summary = "Get the user by id",
+            description = "Requires roles: ADMIN"
+    )
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
     public User getById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
+    @Operation(
+            summary = "Create a new user",
+            description = "Requires roles: ADMIN"
+    )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public User create(@Valid @RequestBody CreateUserRequest request) {
