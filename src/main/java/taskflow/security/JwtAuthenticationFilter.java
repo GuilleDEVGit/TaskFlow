@@ -31,16 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("JWT FILTER EXECUTED");
-
+//        System.out.println("JWT FILTER EXECUTED");
 
         String authHeader = request.getHeader("Authorization");
 
-        System.out.println("AUTH HEADER = " + authHeader);
+//        System.out.println("AUTH HEADER = " + authHeader);
 
-        if (jwtUtil.isTokenValid(authHeader)) {
-            System.out.println("TOKEN IS VALID");
-        }
+//        if (jwtUtil.isTokenValid(authHeader)) {
+//            System.out.println("TOKEN IS VALID");
+//        }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);

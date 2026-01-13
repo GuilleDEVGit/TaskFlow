@@ -50,13 +50,4 @@ public class Task {
     }
 }
 
-//    @ManyToOne
-
-
-//    @PrePersist
-//    protected void onCreate() {
-//        this.createdAt = LocalDateTime.now();
-//        this.status = TaskStatus.TODO;
-//    }
-
 
