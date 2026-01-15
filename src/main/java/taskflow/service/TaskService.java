@@ -2,6 +2,7 @@ package taskflow.service;
 
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
+import taskflow.dto.TaskResponse;
 import taskflow.entity.Task;
 import taskflow.entity.User;
 import taskflow.repository.TaskRepository;
@@ -46,5 +47,27 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
+    public List<TaskResponse> getTasksByUsername(String username) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Task> tasks =
+                taskRepository.findAllByUserId(user.getId());
+
+        return tasks.stream()
+                .map(task -> new TaskResponse(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getStatus(),
+                        task.getDueDate(),
+                        task.getCreatedAt()
+                ))
+                .toList();
+
+    }
+
 
 }
