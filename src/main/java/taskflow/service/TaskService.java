@@ -1,8 +1,10 @@
 package taskflow.service;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
+import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import taskflow.entity.User;
 import taskflow.repository.TaskRepository;
@@ -69,5 +71,21 @@ public class TaskService {
 
     }
 
+    public void updateStatus(
+            Integer taskId,
+            UpdateTaskStatusRequest request,
+            Authentication auth
+    ) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow();
+
+        boolean isOwner = task.getUserId().equals(user.getId());
+
+        task.setStatus(request.getStatus());
+        taskRepository.save(task);
+    }
 
 }
