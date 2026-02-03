@@ -58,6 +58,7 @@ public class TaskController
             summary = "Update status task",
             description = "Requires roles: USER, ADMIN"
     )
+    @PreAuthorize("permitAll()")
     @PatchMapping("/api/tasks/{id}/status")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Integer id,
@@ -67,6 +68,11 @@ public class TaskController
         System.out.println("Entro en Update status ");
         taskService.updateStatus(id, request, auth);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/debug/roles")
+    public Object debugRoles(Authentication authentication) {
+        return authentication.getAuthorities();
     }
 
 }
