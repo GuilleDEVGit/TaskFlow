@@ -58,8 +58,8 @@ public class TaskController
             summary = "Update status task",
             description = "Requires roles: USER, ADMIN"
     )
-    @PreAuthorize("permitAll()")
-    @PatchMapping("/api/tasks/{id}/status")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Integer id,
             @Valid @RequestBody UpdateTaskStatusRequest request,
