@@ -44,6 +44,7 @@ public class TaskService {
                 request.getTitle(),
                 request.getDescription(),
                 request.getDueDate(),
+                request.getStatus(),
                 Integer.parseInt(user.getId().toString())
         );
 

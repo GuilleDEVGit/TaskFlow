@@ -39,13 +39,13 @@ public class Task {
     public Task() {
     }
 
-    public Task(String title, String description, LocalDateTime dueDate, Integer userId) {
+    public Task(String title, String description, LocalDateTime dueDate, TaskStatus status,Integer userId) {
         this.title = title;
         this.description = description;
-        this.status = TaskStatus.TODO; // 🔑 default
-        this.createdAt = LocalDateTime.now(); // 🔑 default
         this.dueDate = dueDate;
+        this.status = status;
         this.userId = userId;
+        this.createdAt = LocalDateTime.now(); // 🔑 default
 
     }
 }

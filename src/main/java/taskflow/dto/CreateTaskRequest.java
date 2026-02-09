@@ -2,6 +2,7 @@ package taskflow.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import taskflow.entity.TaskStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,4 +18,7 @@ public class CreateTaskRequest {
 
     @NotNull(message = "DueDate must not be null")
     private LocalDateTime dueDate;
+
+    @NotNull(message = "status must not be null")
+    private TaskStatus status;
 }
