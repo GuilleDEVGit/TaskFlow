@@ -52,6 +52,20 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public Task update(Integer id, Task updatedTask) {
+
+        Task existingTask = taskRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+
+        existingTask.setTitle(updatedTask.getTitle());
+        existingTask.setDescription(updatedTask.getDescription());
+        existingTask.setStatus(updatedTask.getStatus());
+        existingTask.setDueDate(updatedTask.getDueDate());
+
+        return taskRepository.save(existingTask);
+    }
+
+
     public void delete(Integer id) {
         if (!taskRepository.existsById(id)) {
             throw new EntityNotFoundException("Task not found");
