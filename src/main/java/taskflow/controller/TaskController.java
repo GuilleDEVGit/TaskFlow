@@ -43,7 +43,6 @@ public class TaskController
         return taskService.getMyTasks(authentication.getName());
     }
 
-
     @Operation(
             summary = "Create a new task",
             description = "Requires roles: USER, ADMIN"
@@ -54,6 +53,11 @@ public class TaskController
         return taskService.createTask(request, authentication.getName());
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
+        taskService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @Operation(
             summary = "Update status task",

@@ -1,5 +1,6 @@
 package taskflow.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
@@ -51,6 +52,14 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public void delete(Integer id) {
+        if (!taskRepository.existsById(id)) {
+            throw new EntityNotFoundException("Task not found");
+        }
+        taskRepository.deleteById(id);
+    }
+
+
     public List<TaskResponse> getTasksByUsername(String username) {
 
         User user = userRepository.findByUsername(username)
@@ -72,11 +81,7 @@ public class TaskService {
 
     }
 
-    public void updateStatus(
-            Integer taskId,
-            UpdateTaskStatusRequest request,
-            Authentication auth
-    ) {
+    public void updateStatus(Integer taskId,UpdateTaskStatusRequest request,Authentication auth) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
