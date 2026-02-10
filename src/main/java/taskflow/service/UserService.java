@@ -1,5 +1,6 @@
 package taskflow.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateUserRequest;
@@ -44,8 +45,15 @@ public class UserService {
                 .toList();
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(Integer id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void delete(Integer id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("User not found");
+        }
+        userRepository.deleteById(id);
     }
 }

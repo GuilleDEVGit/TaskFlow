@@ -32,25 +32,35 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/tasks/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/tasks/**").authenticated()
+
+                        // Swagger + auth públicos
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/auth/**",
-                                "/tasks/**",
-                                "/admin/**"
+                                "/auth/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+
+                        // ADMIN to do users y admin
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Usuario autenticado
+                        .requestMatchers("/api/tasks/**").authenticated()
+
+                        // Cualquier otra cosa -> DENEGADA
+                        .anyRequest().denyAll()
                 )
 
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -2,6 +2,7 @@ package taskflow.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import taskflow.dto.CreateUserRequest;
@@ -39,7 +40,7 @@ public class UserController {
     )
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
+    public User getById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
@@ -51,5 +52,16 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody CreateUserRequest request) {
         return userService.createUser(request);
+    }
+
+    @Operation(
+            summary = "Delete a user",
+            description = "Requires roles: ADMIN"
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id){
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
