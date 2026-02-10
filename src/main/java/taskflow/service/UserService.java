@@ -3,6 +3,7 @@ package taskflow.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
@@ -30,8 +31,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserResponseDto(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getCreatedAt()
+                ))
+                .toList();
     }
 
     public User getUserById(Long id) {

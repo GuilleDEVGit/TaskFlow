@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserResponseDto;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
 import taskflow.service.UserService;
@@ -28,7 +29,7 @@ public class UserController {
     )
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
-    public List<User> getAll() {
+    public List<UserResponseDto> getAll() {
         return userService.getAllUsers();
     }
 
