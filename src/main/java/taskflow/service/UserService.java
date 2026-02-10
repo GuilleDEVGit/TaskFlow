@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import taskflow.dto.CreateUserRequest;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
+import taskflow.entity.Task;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
 
@@ -31,6 +32,20 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public User updateUser(Integer id, User updatedUser) {
+
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        existingUser.setRole(updatedUser.getRole());
+
+        return userRepository.save(existingUser);
+    }
+
 
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()

@@ -53,6 +53,10 @@ public class TaskController
         return taskService.createTask(request, authentication.getName());
     }
 
+    @Operation(
+            summary = "Update task",
+            description = "Requires roles: USER, ADMIN"
+    )
     @PutMapping("/update/{id}")
     public ResponseEntity<Task> updateTask(
             @PathVariable Integer id,

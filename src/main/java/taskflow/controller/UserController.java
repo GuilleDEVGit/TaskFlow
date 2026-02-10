@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import taskflow.dto.CreateUserRequest;
 import taskflow.dto.UserResponseDto;
+import taskflow.entity.Task;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
 import taskflow.service.UserService;
@@ -22,7 +23,6 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
 
     @Operation(
             summary = "Get all users",
@@ -53,6 +53,20 @@ public class UserController {
     public User create(@Valid @RequestBody CreateUserRequest request) {
         return userService.createUser(request);
     }
+
+    @Operation(
+            summary = "Update user",
+            description = "Requires roles: ADMIN"
+    )
+    @PutMapping("/update/{id}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Integer id,
+            @RequestBody User updatedUser
+    ) {
+        User user = userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(user);
+    }
+
 
     @Operation(
             summary = "Delete a user",
