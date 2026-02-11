@@ -66,7 +66,10 @@ public class TaskController
         return ResponseEntity.ok(task);
     }
 
-
+    @Operation(
+            summary = "Delete the tasks by id",
+            description = "Requires roles: ADMIN"
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
         taskService.delete(id);
