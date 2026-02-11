@@ -31,7 +31,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public List<UserResponseDto> getAll() {
-        return userService.getAllUsers();
+        return userService.getUsers();
     }
 
     @Operation(

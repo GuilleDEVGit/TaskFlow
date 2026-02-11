@@ -10,6 +10,7 @@ import taskflow.entity.Task;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
 
+import java.security.Timestamp;
 import java.util.List;
 
 @Service
@@ -47,18 +48,24 @@ public class UserService {
     }
 
 
-    public List<UserResponseDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(user -> new UserResponseDto(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getEmail(),
-                        user.getRole(),
-                        user.getCreatedAt()
+
+    public List<UserResponseDto> getUsers() {
+
+        List<Object[]> results = userRepository.findAllWithTaskCountRaw();
+
+        return results.stream()
+                .map(row -> new UserResponseDto(
+                        ((Number) row[0]).intValue(),        // id
+                        (String) row[1],                     // username
+                        (String) row[2],                     // email
+                        Role.valueOf((String) row[3]),       // role
+                        ((java.sql.Timestamp) row[4]).toLocalDateTime(),
+                         ((Number) row[5]).longValue()        // taskCount
                 ))
                 .toList();
     }
+
+
 
     public User getUserById(Integer id) {
         return userRepository.findById(id)
