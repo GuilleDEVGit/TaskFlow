@@ -1,14 +1,22 @@
-# Imagen base con Java 17
-FROM eclipse-temurin:17-jdk-alpine
+# 1️⃣ Build stage
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Carpeta de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiamos el jar generado por Maven
-COPY target/taskflow-0.0.1-SNAPSHOT.jar app.jar
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Puerto que expone la aplicación
+COPY src ./src
+
+RUN mvn clean package -DskipTests
+
+# 2️⃣ Runtime stage
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Comando que arranca la app
 ENTRYPOINT ["java", "-jar", "app.jar"]

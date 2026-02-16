@@ -25,6 +25,9 @@ services:
     restart: always
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   frontend:
     build: ../taskflow-front
