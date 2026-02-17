@@ -15,9 +15,7 @@ public class CorsConfig {
     CorsConfigurationSource corsConfigurationSource(CorsProperties properties) {
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(
-                List.of("https://taskflow-app1.up.railway.app")
-        );
+        config.setAllowedOrigins(properties.getAllowedOrigins());
         config.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         );

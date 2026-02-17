@@ -10,6 +10,7 @@ public class CorsProperties {
     private List<String> allowedOrigins;
 
     public List<String> getAllowedOrigins() {
+        System.out.println("CORS ORIGINS -> " + allowedOrigins);
         return allowedOrigins;
     }
 
