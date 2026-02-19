@@ -87,7 +87,6 @@ public class TaskController
             @Valid @RequestBody UpdateTaskStatusRequest request,
             Authentication auth
     ) {
-        System.out.println("Entro en Update status ");
         taskService.updateStatus(id, request, auth);
         return ResponseEntity.noContent().build();
     }
