@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import taskflow.dto.TaskResponse;
 import taskflow.entity.Task;
+import taskflow.entity.User;
 import taskflow.repository.TaskRepository;
 import taskflow.repository.UserRepository;
 
@@ -52,17 +53,19 @@ class TaskServiceTest {
     @Test
     void testGetMyTasks() {
 
-        when(userRepository.findByUsername("Andres")).thenReturn(crearUsuario());
+        User user = crearUsuario().orElseThrow();
+        when(userRepository.findByUsername("Andres")).thenReturn(Optional.of(user));
+
         List<Task> datos = Arrays.asList(crearTarea001().orElseThrow());
 
-        when(taskRepository.findAllByUserId(1)).thenReturn(datos);
+        when(taskRepository.findAllByUserId(user.getId())).thenReturn(datos);
         List<TaskResponse> tareas = taskService.getTasksByUsername("Andres");
 
         assertFalse(tareas.isEmpty());
         assertEquals(1, tareas.size());
         assertEquals("Tarea 1", tareas.get(0).getTitle());
 
-        verify(taskRepository).findAllByUserId(1);
+        verify(taskRepository).findAllByUserId(user.getId());
         verify(userRepository).findByUsername("Andres");
     }
 }
