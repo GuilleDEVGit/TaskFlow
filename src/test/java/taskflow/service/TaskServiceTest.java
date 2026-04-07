@@ -9,17 +9,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
 import taskflow.entity.Task;
+import taskflow.entity.TaskStatus;
 import taskflow.entity.User;
 import taskflow.repository.TaskRepository;
 import taskflow.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static taskflow.service.Datos.*;
@@ -67,5 +71,29 @@ class TaskServiceTest {
 
         verify(taskRepository).findAllByUserId(user.getId());
         verify(userRepository).findByUsername("Andres");
+    }
+
+    @Test
+    void testCreateTask() {
+        User user = crearUsuario().orElseThrow();
+        CreateTaskRequest request = crearTareaNueva001();
+
+        when(userRepository.findByUsername("Andres")).thenReturn(Optional.of(user));
+
+        when(taskRepository.save(any(Task.class))).then(invocation -> {
+            Task taskCreada = invocation.getArgument(0);
+            return taskCreada;
+        });
+
+        Task result = taskService.createTask(request,"Andres");
+
+        assertEquals(request.getTitle(), result.getTitle());
+        assertEquals(request.getDescription(), result.getDescription());
+        assertEquals(request.getDueDate(), result.getDueDate());
+        assertEquals(request.getStatus(), result.getStatus());
+        assertEquals(user.getId(), result.getUserId());
+
+        verify(taskRepository).save(any(Task.class));
+
     }
 }

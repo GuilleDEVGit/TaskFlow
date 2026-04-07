@@ -21,4 +21,15 @@ public class CreateTaskRequest {
 
     @NotNull(message = "status must not be null")
     private TaskStatus status;
+
+    public CreateTaskRequest(){}
+
+    public CreateTaskRequest(String title, String description, LocalDateTime dueDate, TaskStatus status) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.status = status;
+    }
 }
+
+
