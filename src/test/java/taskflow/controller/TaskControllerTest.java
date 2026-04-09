@@ -127,7 +127,7 @@ class TaskControllerTest {
 
         Task updatedTask = new Task();
         updatedTask.setTitle("Tarea Updated");
-        updatedTask.setDescription("Nueva descripcion");
+        updatedTask.setDescription("Nueva descripcion Updated");
 
         when(taskService.update(eq(existingTask.getId()), any(Task.class)))
                 .thenReturn(updatedTask);
@@ -138,7 +138,8 @@ class TaskControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedTask)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Tarea Updated"));
+                .andExpect(jsonPath("$.title").value("Tarea Updated"))
+                .andExpect(jsonPath("$.description").value("Nueva descripcion Updated"));
 
         verify(taskService).update(eq(existingTask.getId()), any(Task.class));
     }
