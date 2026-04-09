@@ -14,6 +14,9 @@ import taskflow.service.UserService;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,6 +33,7 @@ public class UserController {
     )
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
+    @ResponseStatus(OK)
     public List<UserResponseDto> getAll() {
         return userService.getUsers();
     }
@@ -40,6 +44,7 @@ public class UserController {
     )
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/{id}")
+    @ResponseStatus(OK)
     public User getById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
@@ -50,6 +55,7 @@ public class UserController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
+    @ResponseStatus(CREATED)
     public User create(@Valid @RequestBody CreateUserRequest request) {
         return userService.createUser(request);
     }

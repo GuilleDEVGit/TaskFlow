@@ -2,6 +2,7 @@ package taskflow.service;
 
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -26,11 +27,23 @@ public class Datos {
     }
 
     public static Optional<User> crearUsuario(){
-        return Optional.of(new User(1,"Andres","user@email.conm","1234" ,Role.USER));
+        return Optional.of(new User(1,"Andres","andres@email.com","1234" ,Role.USER));
     }
 
     public static CreateUserRequest crearUsuarioRequest(){
         return new CreateUserRequest("Andres","1234","andres@test.com","USER");
+    }
+
+    public static UserResponseDto userResponseDto01(){
+        return new UserResponseDto(1,"Andres","andres@email.com",Role.USER,
+                LocalDateTime.now(),3L
+        );
+    }
+
+    public static UserResponseDto userResponseDto02(){
+        return new UserResponseDto(2,"Maria","maria@email.com",Role.ADMIN,
+                LocalDateTime.now(),5L
+        );
     }
 
 }
