@@ -1,6 +1,7 @@
 package taskflow.service;
 
 import taskflow.dto.CreateTaskRequest;
+import taskflow.dto.CreateUserRequest;
 import taskflow.entity.Role;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -26,6 +27,10 @@ public class Datos {
 
     public static Optional<User> crearUsuario(){
         return Optional.of(new User(1,"Andres","user@email.conm","1234" ,Role.USER));
+    }
+
+    public static CreateUserRequest crearUsuarioRequest(){
+        return new CreateUserRequest("Andres","1234","andres@test.com","USER");
     }
 
 }

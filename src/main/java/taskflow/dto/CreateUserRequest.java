@@ -18,4 +18,13 @@ public class CreateUserRequest {
 
     @NotBlank(message = "Role must not be blank")
     private String role;
+
+    public CreateUserRequest(){}
+
+    public CreateUserRequest(String username, String password, String email, String role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
 }
