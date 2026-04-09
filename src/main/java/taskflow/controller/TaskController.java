@@ -68,6 +68,7 @@ public class TaskController
             description = "Requires roles: ADMIN"
     )
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
         taskService.delete(id);
         return ResponseEntity.noContent().build();
@@ -86,11 +87,6 @@ public class TaskController
     ) {
         taskService.updateStatus(id, request, auth);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/debug/roles")
-    public Object debugRoles(Authentication authentication) {
-        return authentication.getAuthorities();
     }
 
 }

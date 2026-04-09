@@ -9,11 +9,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import taskflow.dto.CreateTaskRequest;
+import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
+import taskflow.entity.TaskStatus;
 import taskflow.security.JwtAuthenticationFilter;
 import taskflow.service.TaskService;
 
@@ -21,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static taskflow.service.Datos.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -142,5 +144,43 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.description").value("Nueva descripcion Updated"));
 
         verify(taskService).update(eq(existingTask.getId()), any(Task.class));
+    }
+
+    @Test
+    @WithMockUser(roles = {"USER"})
+    void testDeleteTask() throws Exception {
+
+        Integer taskId = 1;
+
+        // Act & Assert
+        mvc.perform(delete("/api/tasks/{id}", taskId)
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+
+        verify(taskService).delete(taskId);
+    }
+
+    @Test
+    @WithMockUser(username = "Andres", roles = {"USER"})
+    void testUpdateStatus() throws Exception {
+
+        // Arrange
+        Integer taskId = 1;
+
+        UpdateTaskStatusRequest request = new UpdateTaskStatusRequest();
+        request.setStatus(TaskStatus.DONE);
+
+        // Act & Assert
+        mvc.perform(patch("/api/tasks/{id}/status", taskId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNoContent());
+
+        verify(taskService).updateStatus(
+                eq(taskId),
+                any(UpdateTaskStatusRequest.class),
+                any(Authentication.class)
+        );
     }
 }
