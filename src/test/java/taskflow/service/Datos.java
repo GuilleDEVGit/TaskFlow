@@ -11,12 +11,12 @@ import java.util.Optional;
 
 public class Datos {
     public static Optional<Task> crearTarea001(){
-        return Optional.of(new Task("Tarea 1", "Descripcion de tarea 1", LocalDateTime.now(),
+        return Optional.of(new Task(1,"Tarea 1", "Descripcion de tarea 1", LocalDateTime.now(),
                 TaskStatus.TODO,1));
     }
 
     public static Optional<Task> crearTarea002(){
-        return Optional.of(new Task("Tarea 2", "Descripcion de tarea 2", LocalDateTime.now(),
+        return Optional.of(new Task(2,"Tarea 2", "Descripcion de tarea 2", LocalDateTime.now(),
                 TaskStatus.TODO,2));
     }
 

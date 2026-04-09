@@ -35,6 +35,27 @@ public class TaskService {
         return taskRepository.findAllByUserId(Integer.parseInt(user.getId().toString()));
     }
 
+//    public List<TaskResponse> getTasksByUsername(String username) {
+//
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        List<Task> tasks =
+//                taskRepository.findAllByUserId(user.getId());
+//
+//        return tasks.stream()
+//                .map(task -> new TaskResponse(
+//                        task.getId(),
+//                        task.getTitle(),
+//                        task.getDescription(),
+//                        task.getStatus(),
+//                        task.getDueDate(),
+//                        task.getCreatedAt()
+//                ))
+//                .toList();
+//
+//    }
+
     public Task createTask(CreateTaskRequest request, String username) {
 
         User user = userRepository.findByUsername(username)
@@ -65,36 +86,6 @@ public class TaskService {
         return taskRepository.save(existingTask);
     }
 
-
-    public void delete(Integer id) {
-        if (!taskRepository.existsById(id)) {
-            throw new EntityNotFoundException("Task not found");
-        }
-        taskRepository.deleteById(id);
-    }
-
-
-    public List<TaskResponse> getTasksByUsername(String username) {
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        List<Task> tasks =
-                taskRepository.findAllByUserId(user.getId());
-
-        return tasks.stream()
-                .map(task -> new TaskResponse(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getStatus(),
-                        task.getDueDate(),
-                        task.getCreatedAt()
-                ))
-                .toList();
-
-    }
-
     public void updateStatus(Integer taskId,UpdateTaskStatusRequest request,Authentication auth) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
@@ -106,6 +97,13 @@ public class TaskService {
 
         task.setStatus(request.getStatus());
         taskRepository.save(task);
+    }
+
+    public void delete(Integer id) {
+        if (!taskRepository.existsById(id)) {
+            throw new EntityNotFoundException("Task not found");
+        }
+        taskRepository.deleteById(id);
     }
 
 }

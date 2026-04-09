@@ -19,4 +19,6 @@ public class UpdateTaskStatusRequest {
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
+
+    public UpdateTaskStatusRequest() {}
 }
