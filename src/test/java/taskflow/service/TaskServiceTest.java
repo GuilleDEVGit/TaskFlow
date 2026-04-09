@@ -1,5 +1,6 @@
 package taskflow.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -157,6 +158,37 @@ class TaskServiceTest {
         verify(userRepository).findByUsername("Andres");
         verify(taskRepository).save(task);
 
+    }
+
+    @Test
+    void testDelete() {
+        // Arrange
+        Integer taskId = 1;
+
+        when(taskRepository.existsById(taskId)).thenReturn(true);
+
+        // Act
+        taskService.delete(taskId);
+
+        // Assert
+        verify(taskRepository).existsById(taskId);
+        verify(taskRepository).deleteById(taskId);
+    }
+
+    @Test
+    void testDeleteException() {
+        // Arrange
+        Integer taskId = 1;
+
+        when(taskRepository.existsById(taskId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            taskService.delete(taskId);
+        });
+
+        // Assert
+        verify(taskRepository).existsById(taskId);
+        verify(taskRepository, never()).deleteById(any());
     }
 
 }
