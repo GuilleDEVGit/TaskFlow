@@ -58,10 +58,7 @@ public class TaskController
             description = "Requires roles: USER, ADMIN"
     )
     @PutMapping("/update/{id}")
-    public ResponseEntity<Task> updateTask(
-            @PathVariable Integer id,
-            @RequestBody Task updatedTask
-    ) {
+    public ResponseEntity<Task> updateTask(@PathVariable Integer id,@RequestBody Task updatedTask) {
         Task task = taskService.update(id, updatedTask);
         return ResponseEntity.ok(task);
     }
