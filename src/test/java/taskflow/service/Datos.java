@@ -22,6 +22,21 @@ public class Datos {
                 TaskStatus.TODO,2));
     }
 
+    public static Task crearTareaJPA001(){
+        return new Task("Tarea 1 JPA", "Descripcion de tarea 1", LocalDateTime.now(),
+                TaskStatus.TODO,1);
+    }
+
+    public static Task crearTareaJPA002(){
+        return new Task("Tarea 2 JPA", "Descripcion de tarea 2", LocalDateTime.now(),
+                TaskStatus.TODO,1);
+    }
+
+    public static Task crearTareaJPA003(){
+        return new Task("Tarea 3 JPA", "Descripcion de tarea 3", LocalDateTime.now(),
+                TaskStatus.TODO,2);
+    }
+
     public static CreateTaskRequest crearTareaNueva001(){
         return new CreateTaskRequest("Tarea nueva","Descripcion",LocalDateTime.now(),TaskStatus.TODO);
     }

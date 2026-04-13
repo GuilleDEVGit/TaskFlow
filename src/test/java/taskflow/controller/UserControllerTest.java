@@ -12,14 +12,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import taskflow.dto.CreateUserRequest;
 import taskflow.dto.UserResponseDto;
-import taskflow.entity.Role;
 import taskflow.entity.User;
 import taskflow.security.JwtAuthenticationFilter;
 import taskflow.service.Datos;
 import taskflow.service.UserService;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -117,6 +116,50 @@ class UserControllerTest {
 
 
         verify(userService).createUser(any(CreateUserRequest.class));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
+    void testUpdateUser() throws Exception {
+        // GIVEN
+        Integer userId = 1;
+
+        User inputUser = crearUsuario().orElseThrow();
+
+        User updatedUser = crearUsuario().orElseThrow();
+        updatedUser.setUsername("Juan");
+        updatedUser.setPassword("5678");
+
+        when(userService.updateUser(eq(userId), any(User.class)))
+                .thenReturn(updatedUser);
+
+        // WHEN + THEN
+        mvc.perform(put("/api/users/update/{id}", userId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(inputUser)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.username").value("Juan"))
+                .andExpect(jsonPath("$.password").value("5678"));
+
+        verify(userService).updateUser(eq(userId), any(User.class));
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN"})
+    void testDeleteUser() throws Exception {
+        // GIVEN
+        Integer userId = 1;
+
+        doNothing().when(userService).delete(userId);
+
+        // WHEN + THEN
+        mvc.perform(delete("/api/users/delete/{id}", userId)
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+
+        verify(userService).delete(userId);
     }
 
 }

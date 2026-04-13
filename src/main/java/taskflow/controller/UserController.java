@@ -65,6 +65,8 @@ public class UserController {
             description = "Requires roles: ADMIN"
     )
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(OK)
     public ResponseEntity<User> updateUser(
             @PathVariable Integer id,
             @RequestBody User updatedUser
@@ -80,6 +82,7 @@ public class UserController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
+    @ResponseStatus(OK)
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id){
         userService.delete(id);
         return ResponseEntity.noContent().build();
