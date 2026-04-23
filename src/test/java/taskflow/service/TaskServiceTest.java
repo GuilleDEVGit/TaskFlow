@@ -9,6 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import taskflow.dto.CreateTaskRequest;
@@ -57,22 +60,30 @@ class TaskServiceTest {
     }
 
     @Test
-    void testGetMyTasks() {
+    void testGetTasksByUsername_ok() {
 
+        // GIVEN
         User user = crearUsuario().orElseThrow();
-        when(userRepository.findByUsername("Andres")).thenReturn(Optional.of(user));
 
-        List<Task> datos = Arrays.asList(crearTarea001().orElseThrow());
+        when(userRepository.findByUsername("Andres"))
+                .thenReturn(Optional.of(user));
 
-        when(taskRepository.findAllByUserId(user.getId())).thenReturn(datos);
-        List<Task> tareas = taskService.getMyTasks("Andres");
+        List<Task> tasks = Arrays.asList(crearTarea001().orElseThrow());
+        Page<Task> page = new PageImpl<>(tasks);
 
-        assertFalse(tareas.isEmpty());
-        assertEquals(1, tareas.size());
-        assertEquals("Tarea 1", tareas.get(0).getTitle());
+        when(taskRepository.findAllByUserId(eq(1), any(Pageable.class)))
+                .thenReturn(page);
 
-        verify(taskRepository).findAllByUserId(user.getId());
+        // WHEN
+        Page<Task> result = taskService.getTasksByUsername("Andres", 0, 5);
+
+        // THEN
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+        assertEquals("Tarea 1", result.getContent().get(0).getTitle());
+
         verify(userRepository).findByUsername("Andres");
+        verify(taskRepository).findAllByUserId(eq(1), any(Pageable.class));
     }
 
     @Test

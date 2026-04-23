@@ -3,6 +3,9 @@ package taskflow.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import taskflow.entity.Task;
 
 import java.util.List;
@@ -27,21 +30,27 @@ class TaskRepositoryTest {
         taskRepository.save(task2);
         taskRepository.save(task3);
 
+        Pageable pageable = PageRequest.of(0, 10);
+
         // WHEN
-        List<Task> result = taskRepository.findAllByUserId(1);
+        Page<Task> result = taskRepository.findAllByUserId(1, pageable);
 
         // THEN
-        assertEquals(2, result.size());
-        assertEquals(1, result.get(0).getUserId());
-        assertEquals("Tarea 1 JPA", result.get(0).getTitle());
-        assertEquals("Tarea 2 JPA", result.get(1).getTitle());
+        assertEquals(2, result.getContent().size());
+        assertEquals(1, result.getContent().get(0).getUserId());
+        assertEquals("Tarea 1 JPA", result.getContent().get(0).getTitle());
     }
 
     @Test
     void testFindTasksByUserIdException() {
-        List<Task> result = taskRepository.findAllByUserId(999);
 
-        assertTrue(result.isEmpty());
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // WHEN
+        Page<Task> result = taskRepository.findAllByUserId(999, pageable);
+
+        // THEN
+        assertTrue(result.getContent().isEmpty());
     }
 
 }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -85,16 +87,20 @@ class TaskControllerTest {
 
         List<Task> tasks = Arrays.asList(task1, task2);
 
-        when(taskService.getMyTasks("Andres"))
-                .thenReturn(tasks);
+        Page<Task> page = new PageImpl<>(tasks);
+
+        when(taskService.getTasksByUsername(eq("Andres"), anyInt(), anyInt()))
+                .thenReturn(page);
 
         // Act & Assert
-        mvc.perform(get("/api/tasks/my"))
+        mvc.perform(get("/api/tasks/my")
+                        .param("page", "0")
+                        .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].title").value("Tarea 1"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].title").value("Tarea 1"));
 
-        verify(taskService).getMyTasks("Andres");
+        verify(taskService).getTasksByUsername(eq("Andres"), anyInt(), anyInt());
     }
 
     @Test
