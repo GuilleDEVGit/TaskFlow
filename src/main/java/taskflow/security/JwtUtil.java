@@ -4,9 +4,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
+
 import java.util.Date;
 
 @Component
@@ -19,8 +21,8 @@ public class JwtUtil {
         this.userRepository = userRepository;
     }
 
-    private final String SECRET_KEY =
-            "super-secret-key-change-this-later";
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
 
     public String generateToken(String username) {
 
