@@ -1,6 +1,9 @@
 package taskflow.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
@@ -28,33 +31,16 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public List<Task> getMyTasks(String username) {
+    public Page<Task> getTasksByUsername(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        return taskRepository.findAllByUserId(Integer.parseInt(user.getId().toString()));
+        Pageable pageable = PageRequest.of(page, size);
+        return taskRepository.findAllByUserId(Integer.parseInt(user.getId().toString()),pageable);
     }
 
-//    public List<TaskResponse> getTasksByUsername(String username) {
-//
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        List<Task> tasks =
-//                taskRepository.findAllByUserId(user.getId());
-//
-//        return tasks.stream()
-//                .map(task -> new TaskResponse(
-//                        task.getId(),
-//                        task.getTitle(),
-//                        task.getDescription(),
-//                        task.getStatus(),
-//                        task.getDueDate(),
-//                        task.getCreatedAt()
-//                ))
-//                .toList();
-//
-//    }
+    public Page<Task> getTasks(Pageable pageable) {
+        return taskRepository.findAll(pageable);
+    }
 
     public Task createTask(CreateTaskRequest request, String username) {
 
