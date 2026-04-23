@@ -78,7 +78,7 @@ class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "Andres", roles = {"USER"})
+    @WithMockUser(username = "Andres")
     void testGetMyTasks() throws Exception {
 
         // Arrange
@@ -104,7 +104,7 @@ class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "Andres", roles = {"USER"})
+    @WithMockUser(username = "Andres")
     void testCreateTask() throws Exception {
 
         // Arrange
@@ -127,7 +127,7 @@ class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser()
     void testUpdateTask() throws Exception {
 
         // Arrange
@@ -153,7 +153,7 @@ class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser()
     void testDeleteTask() throws Exception {
 
         Integer taskId = 1;
@@ -167,7 +167,7 @@ class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "Andres", roles = {"USER"})
+    @WithMockUser(username = "Andres")
     void testUpdateStatus() throws Exception {
 
         // Arrange

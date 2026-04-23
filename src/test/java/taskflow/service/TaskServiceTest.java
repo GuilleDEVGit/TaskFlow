@@ -1,21 +1,16 @@
 package taskflow.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import taskflow.dto.CreateTaskRequest;
-import taskflow.dto.TaskResponse;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -68,7 +63,7 @@ class TaskServiceTest {
         when(userRepository.findByUsername("Andres"))
                 .thenReturn(Optional.of(user));
 
-        List<Task> tasks = Arrays.asList(crearTarea001().orElseThrow());
+        List<Task> tasks = List.of(crearTarea001().orElseThrow());
         Page<Task> page = new PageImpl<>(tasks);
 
         when(taskRepository.findAllByUserId(eq(1), any(Pageable.class)))
@@ -93,10 +88,7 @@ class TaskServiceTest {
 
         when(userRepository.findByUsername("Andres")).thenReturn(Optional.of(user));
 
-        when(taskRepository.save(any(Task.class))).then(invocation -> {
-            Task taskCreada = invocation.getArgument(0);
-            return taskCreada;
-        });
+        when(taskRepository.save(any(Task.class))).then(invocation -> invocation.<Task>getArgument(0));
 
         Task result = taskService.createTask(request,"Andres");
 
@@ -193,9 +185,7 @@ class TaskServiceTest {
 
         when(taskRepository.existsById(taskId)).thenReturn(false);
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            taskService.delete(taskId);
-        });
+        assertThrows(EntityNotFoundException.class, () -> taskService.delete(taskId));
 
         // Assert
         verify(taskRepository).existsById(taskId);
