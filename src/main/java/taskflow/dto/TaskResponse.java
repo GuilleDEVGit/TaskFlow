@@ -15,4 +15,5 @@ public class TaskResponse {
     private TaskStatus status;
     private LocalDateTime dueDate;
     private LocalDateTime createdAt;
+    private String username;
 }

@@ -33,30 +33,31 @@ public class Task {
     @Column(name = "dueDate", nullable = false)
     private LocalDateTime dueDate;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Task() {
     }
 
-    public Task(int id, String title, String description, LocalDateTime dueDate, TaskStatus status,Integer userId) {
+    public Task(int id, String title, String description, LocalDateTime dueDate, TaskStatus status,User user) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.status = status;
-        this.userId = userId;
-        this.createdAt = LocalDateTime.now(); // 🔑 default
+        this.createdAt = LocalDateTime.now();
+        this.user = user;
 
     }
 
-    public Task(String title, String description, LocalDateTime dueDate, TaskStatus status,Integer userId) {
+    public Task(String title, String description, LocalDateTime dueDate, TaskStatus status,User user) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.status = status;
-        this.userId = userId;
-        this.createdAt = LocalDateTime.now(); // 🔑 default
+        this.createdAt = LocalDateTime.now();
+        this.user = user;
 
     }
 }

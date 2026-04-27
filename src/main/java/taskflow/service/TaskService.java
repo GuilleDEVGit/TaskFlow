@@ -1,17 +1,22 @@
 package taskflow.service;
 
+import ch.qos.logback.core.status.Status;
+import jakarta.annotation.Priority;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
+import taskflow.entity.TaskStatus;
 import taskflow.entity.User;
 import taskflow.repository.TaskRepository;
+import taskflow.repository.TaskSpecification;
 import taskflow.repository.UserRepository;
 
 import java.util.List;
@@ -31,11 +36,23 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Page<Task> getTasksByUsername(String username, int page, int size) {
+    public Page<TaskResponse> getTasksByUsername(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         Pageable pageable = PageRequest.of(page, size);
-        return taskRepository.findAllByUserId(Integer.parseInt(user.getId().toString()),pageable);
+
+        Page<Task> taskPage = taskRepository.findAllByUserId(Integer.parseInt(user.getId().toString()),pageable);
+
+        return taskPage.map(task -> new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getDueDate(),
+                task.getCreatedAt(),
+                task.getUser().getUsername()
+        ));
     }
 
     public Page<Task> getTasks(Pageable pageable) {
@@ -53,13 +70,13 @@ public class TaskService {
                 request.getDescription(),
                 request.getDueDate(),
                 request.getStatus(),
-                Integer.parseInt(user.getId().toString())
+                user
         );
 
         return taskRepository.save(task);
     }
 
-    public Task update(Integer id, Task updatedTask) {
+    public TaskResponse update(Integer id, Task updatedTask) {
 
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
@@ -69,7 +86,17 @@ public class TaskService {
         existingTask.setStatus(updatedTask.getStatus());
         existingTask.setDueDate(updatedTask.getDueDate());
 
-        return taskRepository.save(existingTask);
+        Task savedTask = taskRepository.save(existingTask);
+
+        return new TaskResponse(
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getDescription(),
+                savedTask.getStatus(),
+                savedTask.getDueDate(),
+                savedTask.getCreatedAt(),
+                savedTask.getUser().getUsername()
+        );
     }
 
     public void updateStatus(Integer taskId,UpdateTaskStatusRequest request,Authentication auth) {
@@ -79,7 +106,7 @@ public class TaskService {
         User user = userRepository.findByUsername(auth.getName())
                 .orElseThrow();
 
-        boolean isOwner = task.getUserId().equals(user.getId());
+        boolean isOwner = task.getUser().getId().equals(user.getId());
 
         task.setStatus(request.getStatus());
         taskRepository.save(task);
@@ -90,6 +117,35 @@ public class TaskService {
             throw new EntityNotFoundException("Task not found");
         }
         taskRepository.deleteById(id);
+    }
+
+    public Page<TaskResponse> getTasksByFilters(
+            Integer userId,
+            TaskStatus status,
+            String title,
+            int page,
+            int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<Task> spec = Specification.allOf(
+                TaskSpecification.hasUserId(userId),
+                TaskSpecification.hasStatus(status),
+                TaskSpecification.titleContains(title)
+        );
+
+        Page<Task> taskPage = taskRepository.findAll(spec, pageable);
+
+        return taskPage.map(task -> new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getCreatedAt(),
+                task.getDueDate(),
+                task.getUser().getUsername()
+        ));
     }
 
 }

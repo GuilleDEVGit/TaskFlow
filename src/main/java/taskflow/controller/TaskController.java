@@ -8,9 +8,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import taskflow.dto.CreateTaskRequest;
+import taskflow.dto.TaskResponse;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import org.springframework.web.bind.annotation.*;
+import taskflow.entity.TaskStatus;
 import taskflow.service.TaskService;
 
 import java.util.List;
@@ -25,30 +27,25 @@ public class TaskController
         this.taskService = taskService;
     }
 
+    //GET
     @Operation(
-            summary = "Get all the tasks",
-            description = "Requires roles: ADMIN"
-    )
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping
-    public List<Task> getTasks() {
-        return taskService.getTasks();
-    }
-
-    @Operation(
-            summary = "Get the tasks by userId",
+            summary = "Filter task by arguments",
             description = "Requires roles: USER, ADMIN"
     )
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/my")
-    public Page<Task> getMyTasks(
+    @GetMapping
+    public Page<TaskResponse> getTasks(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) TaskStatus status,
+            @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
     ) {
-        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
-        return taskService.getTasksByUsername(username, page, size);
+        return taskService.getTasksByFilters(userId, status, title, page, size);
     }
 
+
+    //CREATE
     @Operation(
             summary = "Create a new task",
             description = "Requires roles: USER, ADMIN"
@@ -59,25 +56,15 @@ public class TaskController
         return taskService.createTask(request, authentication.getName());
     }
 
+    //UPDATE
     @Operation(
             summary = "Update task",
             description = "Requires roles: USER, ADMIN"
     )
     @PutMapping("/update/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Integer id,@RequestBody Task updatedTask) {
-        Task task = taskService.update(id, updatedTask);
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Integer id,@RequestBody Task updatedTask) {
+        TaskResponse task = taskService.update(id, updatedTask);
         return ResponseEntity.ok(task);
-    }
-
-    @Operation(
-            summary = "Delete the tasks by id",
-            description = "Requires roles: ADMIN"
-    )
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
-        taskService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -94,5 +81,20 @@ public class TaskController
         taskService.updateStatus(id, request, auth);
         return ResponseEntity.noContent().build();
     }
+
+    //DELETE
+    @Operation(
+            summary = "Delete the tasks by id",
+            description = "Requires roles: ADMIN"
+    )
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
+        taskService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 
 }
