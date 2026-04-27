@@ -12,29 +12,33 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class Datos {
+
+    public static User user1 = new User(1,"Andres","andres@email.com","1234" ,Role.USER);
+    public static User user2 = new User(2,"Pepe","pepe@email.com","1234" ,Role.USER);
+
     public static Optional<Task> crearTarea001(){
         return Optional.of(new Task(1,"Tarea 1", "Descripcion de tarea 1", LocalDateTime.now(),
-                TaskStatus.TODO,1));
+                TaskStatus.TODO,user1));
     }
 
     public static Optional<Task> crearTarea002(){
         return Optional.of(new Task(2,"Tarea 2", "Descripcion de tarea 2", LocalDateTime.now(),
-                TaskStatus.TODO,2));
+                TaskStatus.TODO,user2));
     }
 
     public static Task crearTareaJPA001(){
         return new Task("Tarea 1 JPA", "Descripcion de tarea 1", LocalDateTime.now(),
-                TaskStatus.TODO,1);
+                TaskStatus.TODO,user1);
     }
 
     public static Task crearTareaJPA002(){
         return new Task("Tarea 2 JPA", "Descripcion de tarea 2", LocalDateTime.now(),
-                TaskStatus.TODO,1);
+                TaskStatus.TODO,user1);
     }
 
     public static Task crearTareaJPA003(){
         return new Task("Tarea 3 JPA", "Descripcion de tarea 3", LocalDateTime.now(),
-                TaskStatus.TODO,2);
+                TaskStatus.TODO,user2);
     }
 
     public static CreateTaskRequest crearTareaNueva001(){
