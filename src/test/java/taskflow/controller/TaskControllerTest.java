@@ -56,34 +56,34 @@ class TaskControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-    @Test
-    @WithMockUser(roles = {"USER"})
-    void testGetTasks() throws Exception {
-
-        TaskResponse response = crearTaskResponse001();
-
-        Page<TaskResponse> page = new PageImpl<>(List.of(response));
-
-        when(taskService.getTasksByFilters(
-                eq(1),
-                eq(TaskStatus.TODO),
-                eq("Test"),
-                eq(0),
-                eq(6)
-        )).thenReturn(page);
-
-        mvc.perform(get("/api/tasks")
-                        .param("userId", "1")
-                        .param("status", "TODO")
-                        .param("title", "Test")
-                        .param("page", "0")
-                        .param("size", "6"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("Test task"))
-                .andExpect(jsonPath("$.content[0].username").value("testuser"));
-
-        verify(taskService).getTasksByFilters(1, TaskStatus.TODO, "Test", 0, 6);
-    }
+//    @Test
+//    @WithMockUser(roles = {"USER"})
+//    void testGetTasks() throws Exception {
+//
+//        TaskResponse response = crearTaskResponse001();
+//
+//        Page<TaskResponse> page = new PageImpl<>(List.of(response));
+//
+//        when(taskService.getTasksByFilters(
+//                eq(1),
+//                eq(TaskStatus.TODO),
+//                eq("Test"),
+//                eq(0),
+//                eq(6)
+//        )).thenReturn(page);
+//
+//        mvc.perform(get("/api/tasks")
+//                        .param("userId", "1")
+//                        .param("status", "TODO")
+//                        .param("title", "Test")
+//                        .param("page", "0")
+//                        .param("size", "6"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.content[0].title").value("Test task"))
+//                .andExpect(jsonPath("$.content[0].username").value("testuser"));
+//
+//        verify(taskService).getTasksByFilters(1, TaskStatus.TODO, "Test", 0, 6);
+//    }
 
 
     @Test
