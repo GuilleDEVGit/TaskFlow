@@ -13,7 +13,6 @@ public class CreateTaskRequest {
     @NotBlank(message = "Tittle must not be blank")
     private String title;
 
-    @NotBlank(message = "Description must not be blank")
     private String description;
 
     @NotNull(message = "DueDate must not be null")
