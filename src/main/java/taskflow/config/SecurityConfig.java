@@ -43,7 +43,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ADMIN to do users y admin
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // Usuario autenticado

@@ -31,7 +31,7 @@ public class UserController {
             summary = "Get all users",
             description = "Requires roles: ADMIN"
     )
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
     @ResponseStatus(OK)
     public List<UserResponseDto> getAll() {
