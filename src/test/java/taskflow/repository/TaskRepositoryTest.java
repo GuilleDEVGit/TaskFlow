@@ -3,11 +3,18 @@ package taskflow.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import taskflow.entity.Role;
 import taskflow.entity.Task;
+import taskflow.entity.TaskStatus;
+import taskflow.entity.User;
 
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static taskflow.service.Datos.*;
 
@@ -17,27 +24,37 @@ class TaskRepositoryTest {
     @Autowired
     private TaskRepository taskRepository;
 
-//    @Test
-//    void testFindTasksByUserId() {
-//        // GIVEN
-//        Task task1 = crearTareaJPA001();
-//        Task task2 = crearTareaJPA002();
-//        Task task3 = crearTareaJPA003();
-//
-//        taskRepository.save(task1);
-//        taskRepository.save(task2);
-//        taskRepository.save(task3);
-//
-//        Pageable pageable = PageRequest.of(0, 10);
-//
-//        // WHEN
-//        Page<Task> result = taskRepository.findAllByUserId(1, pageable);
-//
-//        // THEN
-//        assertEquals(2, result.getContent().size());
-//        assertEquals(1, result.getContent().get(0).getUser().getId());
-//        assertEquals("Tarea 1 JPA", result.getContent().get(0).getTitle());
-//    }
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Test
+    void testFindAllByUserId() {
+        // GIVEN
+        User user = createUser();
+        entityManager.persist(user);
+
+        Task task1 = entityManager.persistAndFlush(
+                createTask(user, "Task 1")
+        );
+
+        Task task2 = entityManager.persistAndFlush(
+                createTask(user, "Task 2")
+        );
+
+        entityManager.flush();
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // WHEN
+        Page<Task> result = taskRepository.findAllByUserId(user.getId(), pageable);
+
+        // THEN
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent())
+                .extracting(Task::getTitle)
+                .containsExactlyInAnyOrder("Task 1", "Task 2");
+    }
 
     @Test
     void testFindTasksByUserIdException() {

@@ -2,6 +2,7 @@ package taskflow.service;
 
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.TaskResponse;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
 import taskflow.entity.Task;
@@ -19,6 +20,11 @@ public class Datos {
     public static Optional<Task> crearTarea001(){
         return Optional.of(new Task(1,"Tarea 1", "Descripcion de tarea 1", LocalDateTime.now(),
                 TaskStatus.TODO,user1));
+    }
+
+    public static TaskResponse crearTaskResponse001(){
+        return new TaskResponse(1,"Test task", "desc", TaskStatus.TODO,null,null,
+                "testuser");
     }
 
     public static Optional<Task> crearTarea002(){
@@ -63,6 +69,26 @@ public class Datos {
         return new UserResponseDto(2,"Maria","maria@email.com",Role.ADMIN,
                 LocalDateTime.now(),5L
         );
+    }
+
+    public static User createUser() {
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("testpassword");
+        user.setEmail("user1@email.com");
+        user.setRole(Role.USER);
+        return user;
+    }
+
+    public static Task createTask(User user, String title) {
+        Task task = new Task();
+        task.setTitle(title);
+        task.setDescription(title);
+        task.setCreatedAt(LocalDateTime.now());
+        task.setDueDate(LocalDateTime.now());
+        task.setUser(user);
+        task.setStatus(TaskStatus.DONE);
+        return task;
     }
 
 }

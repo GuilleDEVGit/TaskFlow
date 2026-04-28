@@ -32,33 +32,31 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public List<Task> getTasks() {
-        return taskRepository.findAll();
-    }
-
-    public Page<TaskResponse> getTasksByUsername(String username, int page, int size) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    //GET
+    public Page<TaskResponse> getTasksByFilters(Integer userId,TaskStatus status,String title,int page,int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Task> taskPage = taskRepository.findAllByUserId(Integer.parseInt(user.getId().toString()),pageable);
+        Specification<Task> spec = Specification.allOf(
+                TaskSpecification.hasUserId(userId),
+                TaskSpecification.hasStatus(status),
+                TaskSpecification.titleContains(title)
+        );
+
+        Page<Task> taskPage = taskRepository.findAll(spec, pageable);
 
         return taskPage.map(task -> new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus(),
-                task.getDueDate(),
                 task.getCreatedAt(),
+                task.getDueDate(),
                 task.getUser().getUsername()
         ));
     }
 
-    public Page<Task> getTasks(Pageable pageable) {
-        return taskRepository.findAll(pageable);
-    }
-
+    //CREATE
     public Task createTask(CreateTaskRequest request, String username) {
 
         User user = userRepository.findByUsername(username)
@@ -76,6 +74,7 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    //UPDATE
     public TaskResponse update(Integer id, Task updatedTask) {
 
         Task existingTask = taskRepository.findById(id)
@@ -112,6 +111,7 @@ public class TaskService {
         taskRepository.save(task);
     }
 
+    //DELETE
     public void delete(Integer id) {
         if (!taskRepository.existsById(id)) {
             throw new EntityNotFoundException("Task not found");
@@ -119,33 +119,6 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
-    public Page<TaskResponse> getTasksByFilters(
-            Integer userId,
-            TaskStatus status,
-            String title,
-            int page,
-            int size
-    ) {
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        Specification<Task> spec = Specification.allOf(
-                TaskSpecification.hasUserId(userId),
-                TaskSpecification.hasStatus(status),
-                TaskSpecification.titleContains(title)
-        );
-
-        Page<Task> taskPage = taskRepository.findAll(spec, pageable);
-
-        return taskPage.map(task -> new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getCreatedAt(),
-                task.getDueDate(),
-                task.getUser().getUsername()
-        ));
-    }
 
 }
