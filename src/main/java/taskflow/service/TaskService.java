@@ -34,9 +34,8 @@ public class TaskService {
     }
 
     //GET
-    public Page<TaskResponse> getTasksByFilters(Integer userId,TaskStatus status,String title,int page,int size) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    public Page<TaskResponse> getTasksByFilters(Integer userId,TaskStatus status,String title,int page,int size
+            , Pageable pageable) {
 
         Specification<Task> spec = Specification.allOf(
                 TaskSpecification.hasUserId(userId),
