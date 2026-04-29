@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -43,31 +44,33 @@ class TaskServiceTest {
     @InjectMocks
     TaskService taskService;
 
-//    @Test
-//    void testGetTasksByFilters() {
-//        // GIVEN
-//
-//        Task task = crearTarea001().orElseThrow();
-//
-//        Page<Task> taskPage = new PageImpl<>(List.of(task));
-//
-//        when(taskRepository.findAll(any(Specification.class), any(Pageable.class)))
-//                .thenReturn(taskPage);
-//
-//        // WHEN
-//        Page<TaskResponse> result = taskService.getTasksByFilters(
-//                1,TaskStatus.TODO,"Test",0,10);
-//
-//        // THEN
-//        assertThat(result).hasSize(1);
-//
-//        TaskResponse response = result.getContent().get(0);
-//
-//        assertThat(response.getTitle()).isEqualTo("Tarea 1");
-//        assertThat(response.getUsername()).isEqualTo("Andres");
-//
-//        verify(taskRepository).findAll(any(Specification.class), any(Pageable.class));
-//    }
+    @Test
+    void testGetTasksByFilters() {
+        // GIVEN
+
+        Task task = crearTarea001().orElseThrow();
+
+        Page<Task> taskPage = new PageImpl<>(List.of(task));
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(taskRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(taskPage);
+
+        // WHEN
+        Page<TaskResponse> result = taskService.getTasksByFilters(
+                1,TaskStatus.TODO,"Test", pageable);
+
+        // THEN
+        assertThat(result).hasSize(1);
+
+        TaskResponse response = result.getContent().get(0);
+
+        assertThat(response.getTitle()).isEqualTo("Tarea 1");
+        assertThat(response.getUsername()).isEqualTo("Andres");
+
+        verify(taskRepository).findAll(any(Specification.class), any(Pageable.class));
+    }
 
     @Test
     void testCreateTask() {

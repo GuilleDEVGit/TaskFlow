@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static taskflow.service.Datos.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -56,34 +56,37 @@ class TaskControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-//    @Test
-//    @WithMockUser(roles = {"USER"})
-//    void testGetTasks() throws Exception {
-//
-//        TaskResponse response = crearTaskResponse001();
-//
-//        Page<TaskResponse> page = new PageImpl<>(List.of(response));
-//
-//        when(taskService.getTasksByFilters(
-//                eq(1),
-//                eq(TaskStatus.TODO),
-//                eq("Test"),
-//                eq(0),
-//                eq(6)
-//        )).thenReturn(page);
-//
-//        mvc.perform(get("/api/tasks")
-//                        .param("userId", "1")
-//                        .param("status", "TODO")
-//                        .param("title", "Test")
-//                        .param("page", "0")
-//                        .param("size", "6"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.content[0].title").value("Test task"))
-//                .andExpect(jsonPath("$.content[0].username").value("testuser"));
-//
-//        verify(taskService).getTasksByFilters(1, TaskStatus.TODO, "Test", 0, 6);
-//    }
+    @Test
+    @WithMockUser(roles = {"USER"})
+    void testGetTasks() throws Exception {
+
+        TaskResponse response = crearTaskResponse001();
+
+        Page<TaskResponse> page = new PageImpl<>(List.of(response));
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+
+        when(taskService.getTasksByFilters(
+                eq(1),
+                eq(TaskStatus.TODO),
+                eq("Test"),
+                eq(pageable)
+        )).thenReturn(page);
+
+
+        mvc.perform(get("/api/tasks")
+                        .param("userId", "1")
+                        .param("status", "TODO")
+                        .param("title", "Test")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andDo(print())
+               .andExpect(jsonPath("$.content[0].title").value("Test task"))
+               .andExpect(jsonPath("$.content[0].username").value("testuser"));
+
+        verify(taskService).getTasksByFilters(1, TaskStatus.TODO, "Test",  pageable);
+    }
 
 
     @Test

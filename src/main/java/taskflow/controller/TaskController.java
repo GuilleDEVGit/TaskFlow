@@ -39,12 +39,10 @@ public class TaskController
             @RequestParam(required = false) Integer userId,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) String title,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return taskService.getTasksByFilters(userId, status, title, page, size,pageable);
+        return taskService.getTasksByFilters(userId, status, title, pageable);
     }
 
 
