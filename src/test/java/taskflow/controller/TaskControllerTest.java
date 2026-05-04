@@ -16,12 +16,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
+import taskflow.dto.TaskUpdateDTO;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
 import taskflow.security.JwtAuthenticationFilter;
 import taskflow.service.TaskService;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,14 +119,17 @@ class TaskControllerTest {
     void testUpdateTask() throws Exception {
 
         // GIVEN
-        Task updatedTask = new Task();
-        updatedTask.setTitle("Updated task");
-        updatedTask.setDescription("Updated desc");
-        updatedTask.setStatus(TaskStatus.DONE);
+        TaskUpdateDTO updatedTask = new TaskUpdateDTO(
+                1,
+                "TareaUpdated 1",
+                "Nueva Descripcion",
+                TaskStatus.DONE,
+                LocalDateTime.now(),
+                1);
 
         TaskResponse response = crearTaskResponse001();
 
-        when(taskService.update(eq(1), any(Task.class)))
+        when(taskService.update(eq(1), any(TaskUpdateDTO.class)))
                 .thenReturn(response);
 
         // WHEN + THEN
@@ -136,7 +141,7 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.title").value("Test task"))
                 .andExpect(jsonPath("$.status").value("TODO"));
 
-        verify(taskService).update(eq(1), any(Task.class));
+        verify(taskService).update(eq(1), any(TaskUpdateDTO.class));
     }
 
     @Test

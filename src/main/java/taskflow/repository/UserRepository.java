@@ -1,6 +1,7 @@
 package taskflow.repository;
 
 import org.springframework.data.jpa.repository.Query;
+import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
+
+    @Query(value = "SELECT id,username FROM users", nativeQuery = true)
+    List<UserOptionDTO> getUserOptions();
 
     @Query(value = """
     SELECT u.id,

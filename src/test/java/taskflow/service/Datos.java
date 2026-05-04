@@ -1,9 +1,6 @@
 package taskflow.service;
 
-import taskflow.dto.CreateTaskRequest;
-import taskflow.dto.CreateUserRequest;
-import taskflow.dto.TaskResponse;
-import taskflow.dto.UserResponseDto;
+import taskflow.dto.*;
 import taskflow.entity.Role;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -17,6 +14,9 @@ public class Datos {
     public static User user1 = new User(1,"Andres","andres@email.com","1234" ,Role.USER);
     public static User user2 = new User(2,"Pepe","pepe@email.com","1234" ,Role.USER);
 
+    public static UserOptionDTO userOptionDTO = new UserOptionDTO(1,"Andres");
+    public static UserOptionDTO userOptionDTO2 = new UserOptionDTO(2,"Pepe");
+
     public static Optional<Task> crearTarea001(){
         return Optional.of(new Task(1,"Tarea 1", "Descripcion de tarea 1", LocalDateTime.now(),
                 TaskStatus.TODO,user1));
@@ -24,7 +24,7 @@ public class Datos {
 
     public static TaskResponse crearTaskResponse001(){
         return new TaskResponse(1,"Test task", "desc", TaskStatus.TODO,null,null,
-                "testuser");
+                "testuser",1);
     }
 
     public static Optional<Task> crearTarea002(){

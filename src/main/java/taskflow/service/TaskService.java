@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
+import taskflow.dto.TaskUpdateDTO;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -51,7 +52,8 @@ public class TaskService {
                 task.getStatus(),
                 task.getDueDate(),
                 task.getCreatedAt(),
-                task.getUser().getUsername()
+                task.getUser().getUsername(),
+                task.getUser().getId()
         ));
     }
 
@@ -74,15 +76,21 @@ public class TaskService {
     }
 
     //UPDATE
-    public TaskResponse update(Integer id, Task updatedTask) {
+    public TaskResponse update(Integer id, TaskUpdateDTO updatedTask) {
 
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-        existingTask.setTitle(updatedTask.getTitle());
-        existingTask.setDescription(updatedTask.getDescription());
-        existingTask.setStatus(updatedTask.getStatus());
-        existingTask.setDueDate(updatedTask.getDueDate());
+
+        existingTask.setTitle(updatedTask.title());
+        existingTask.setDescription(updatedTask.description());
+        existingTask.setStatus(updatedTask.status());
+        existingTask.setDueDate(updatedTask.dueDate());
+
+        User user = userRepository.findById(updatedTask.userId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        existingTask.setUser(user);
 
         Task savedTask = taskRepository.save(existingTask);
 
@@ -93,7 +101,8 @@ public class TaskService {
                 savedTask.getStatus(),
                 savedTask.getDueDate(),
                 savedTask.getCreatedAt(),
-                savedTask.getUser().getUsername()
+                savedTask.getUser().getUsername(),
+                savedTask.getUser().getId()
         );
     }
 

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
 import taskflow.entity.Task;
@@ -64,7 +65,9 @@ public class UserService {
                 .toList();
     }
 
-
+    public List<UserOptionDTO> getUserOptions() {
+        return userRepository.getUserOptions();
+    }
 
     public User getUserById(Integer id) {
         return userRepository.findById(id)

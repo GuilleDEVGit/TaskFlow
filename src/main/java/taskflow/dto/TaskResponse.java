@@ -16,4 +16,5 @@ public class TaskResponse {
     private LocalDateTime dueDate;
     private LocalDateTime createdAt;
     private String username;
+    private int userId;
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Task;
 import taskflow.entity.User;
@@ -36,6 +37,18 @@ public class UserController {
     @ResponseStatus(OK)
     public List<UserResponseDto> getAll() {
         return userService.getUsers();
+    }
+
+    //Endpoint que te trae el user especifico
+    @Operation(
+            summary = "Get User information for select options",
+            description = "Requires roles: ADMIN,USER"
+    )
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/options")
+    @ResponseStatus(OK)
+    public List<UserOptionDTO> getUserOptions() {
+        return userService.getUserOptions();
     }
 
     @Operation(

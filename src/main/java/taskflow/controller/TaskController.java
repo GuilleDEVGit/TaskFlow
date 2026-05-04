@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
+import taskflow.dto.TaskUpdateDTO;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +65,7 @@ public class TaskController
     )
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Integer id,@RequestBody Task updatedTask) {
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Integer id,@RequestBody TaskUpdateDTO updatedTask) {
         TaskResponse task = taskService.update(id, updatedTask);
         return ResponseEntity.ok(task);
     }

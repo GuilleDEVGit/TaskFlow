@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
 import taskflow.entity.User;
@@ -59,6 +60,9 @@ class UserServiceTest {
         verify(userRepository).save(any(User.class));
 
     }
+
+
+
 
     @Test
     void testUpdateUser() {
@@ -138,6 +142,26 @@ class UserServiceTest {
         assertEquals(5L, user2.taskCount());
 
         verify(userRepository).findAllWithTaskCountRaw();
+    }
+
+
+    @Test
+    void testGetUserOptional() {
+        List<UserOptionDTO> ListaUsers = List.of(userOptionDTO,userOptionDTO2);
+
+        when(userRepository.getUserOptions()).thenReturn(ListaUsers);
+
+        List<UserOptionDTO> result = userService.getUserOptions();
+
+        UserOptionDTO user1 = result.get(0);
+        UserOptionDTO user2 = result.get(1);
+        assertEquals(2, result.size());
+        assertEquals(1, user1.id());
+        assertEquals("Andres", user1.username());
+        assertEquals(2, user2.id());
+        assertEquals("Pepe", user2.username());
+
+        verify(userRepository).getUserOptions();
     }
 
     @Test

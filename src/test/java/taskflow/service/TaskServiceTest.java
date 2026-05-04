@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
+import taskflow.dto.TaskUpdateDTO;
 import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -97,14 +98,19 @@ class TaskServiceTest {
         // Arrange
         Task existingTask = crearTarea001().orElseThrow();
 
-        Task updatedTask = new Task();
-        updatedTask.setTitle("TareaUpdated 1");
-        updatedTask.setDescription("Nueva Descripcion");
-        updatedTask.setStatus(TaskStatus.DONE);
-        updatedTask.setDueDate(LocalDateTime.now());
+        TaskUpdateDTO updatedTask = new TaskUpdateDTO(
+                1,
+                "TareaUpdated 1",
+                "Nueva Descripcion",
+                TaskStatus.DONE,
+                LocalDateTime.now(),
+                1);
 
         when(taskRepository.findById(existingTask.getId()))
                 .thenReturn(Optional.of(existingTask));
+
+        when(userRepository.findById(1))
+                .thenReturn(Optional.of(user1));
 
         when(taskRepository.save(any(Task.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));

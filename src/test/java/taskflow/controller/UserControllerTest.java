@@ -11,6 +11,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import taskflow.dto.CreateUserRequest;
+import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.User;
 import taskflow.security.JwtAuthenticationFilter;
@@ -66,6 +67,28 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[1].taskCount").value(5L));
 
         verify(userService).getUsers();
+    }
+
+    @Test
+    @WithMockUser(roles = {"ADMIN","USER"})
+    void testGetUserOptions() throws Exception {
+        UserOptionDTO user1 = userOptionDTO;
+        UserOptionDTO user2 = userOptionDTO2;
+
+        when(userService.getUserOptions())
+                .thenReturn(List.of(user1, user2));
+
+        mvc.perform(get("/api/users/options").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[0].username").value("Andres"))
+                .andExpect(jsonPath("$[1].username").value("Pepe"));
+
+        verify(userService).getUserOptions();
+
     }
 
     @Test
