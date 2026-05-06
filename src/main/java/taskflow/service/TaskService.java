@@ -1,14 +1,13 @@
 package taskflow.service;
 
-import ch.qos.logback.core.status.Status;
-import jakarta.annotation.Priority;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
@@ -21,13 +20,14 @@ import taskflow.repository.TaskRepository;
 import taskflow.repository.TaskSpecification;
 import taskflow.repository.UserRepository;
 
-import java.util.List;
-
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+
+    private static final Logger logger =
+            LogManager.getLogger(TaskService.class);
 
     public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
@@ -72,7 +72,17 @@ public class TaskService {
                 user
         );
 
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+
+        logger.info(
+                "TASK_CREATED user={} taskId={} title={} status={}",
+                username,
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getStatus()
+        );
+
+        return savedTask;
     }
 
     //UPDATE
@@ -93,6 +103,14 @@ public class TaskService {
         existingTask.setUser(user);
 
         Task savedTask = taskRepository.save(existingTask);
+
+        logger.info(
+                "TASK_UPDATED user={} taskId={} title={} status={}",
+                user.getUsername(),
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getStatus()
+        );
 
         return new TaskResponse(
                 savedTask.getId(),
@@ -117,14 +135,38 @@ public class TaskService {
 
         task.setStatus(request.getStatus());
         taskRepository.save(task);
+
+        logger.info(
+                "TASK STATUS_UPDATED user={} taskId={} title={} status={}",
+                user.getUsername(),
+                task.getId(),
+                task.getTitle(),
+                task.getStatus()
+        );
     }
 
     //DELETE
-    public void delete(Integer id) {
-        if (!taskRepository.existsById(id)) {
+    public void delete(Integer taskId) {
+        if (!taskRepository.existsById(taskId)) {
             throw new EntityNotFoundException("Task not found");
         }
-        taskRepository.deleteById(id);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String username = auth.getName();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        taskRepository.deleteById(taskId);
+
+        logger.info(
+                "TASK_DELETED user={} taskId={} title={}",
+                username,
+                taskId,
+                task.getTitle()
+
+        );
     }
 
 

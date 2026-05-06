@@ -12,6 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
 import taskflow.dto.TaskUpdateDTO;
@@ -165,7 +168,19 @@ class TaskServiceTest {
         // Arrange
         Integer taskId = 1;
 
+        Task task = crearTarea001().orElseThrow();
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("Andres");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
+
         when(taskRepository.existsById(taskId)).thenReturn(true);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
         // Act
         taskService.delete(taskId);

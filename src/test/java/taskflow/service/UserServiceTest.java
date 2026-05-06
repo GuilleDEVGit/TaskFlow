@@ -61,9 +61,6 @@ class UserServiceTest {
 
     }
 
-
-
-
     @Test
     void testUpdateUser() {
         // Arrange
@@ -205,9 +202,13 @@ class UserServiceTest {
 
         // Arrange
         Integer userId = 1;
+        User user = crearUsuario().orElseThrow();
 
         when(userRepository.existsById(userId))
                 .thenReturn(true);
+
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
 
         // Act
         userService.delete(userId);

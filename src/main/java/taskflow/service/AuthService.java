@@ -3,16 +3,23 @@ package taskflow.service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import taskflow.dto.LoginRequest;
 import taskflow.dto.LoginResponse;
 import taskflow.security.JwtUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 @Service
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+
+    private static final Logger logger =
+            LogManager.getLogger(AuthService.class);
 
     public AuthService(AuthenticationManager authenticationManager,
                        JwtUtil jwtUtil) {
@@ -34,10 +41,19 @@ public class AuthService {
                     authentication.getName()
             );
 
+            logger.info(
+                    "LOGIN_SUCCESS user={}",
+                    authentication.getName()
+            );
+
             return new LoginResponse(token);
 
 
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
+            logger.warn(
+                    "LOGIN_FAILED user={}",
+                    request.getUsername()
+            );
             e.printStackTrace(); // 👈 MUY IMPORTANTE
             throw e;
         }

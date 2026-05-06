@@ -7,17 +7,19 @@ import taskflow.dto.CreateUserRequest;
 import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
-import taskflow.entity.Task;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
-
-import java.security.Timestamp;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private static final Logger logger =
+            LogManager.getLogger(UserService.class);
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -32,7 +34,17 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setRole(Role.valueOf(request.getRole()));
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        logger.info(
+                "USER_CREATED id={} user={} email={} role={}",
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getEmail(),
+                savedUser.getRole()
+        );
+
+        return savedUser;
     }
 
     public User updateUser(Integer id, User updatedUser) {
@@ -45,7 +57,17 @@ public class UserService {
         existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         existingUser.setRole(updatedUser.getRole());
 
-        return userRepository.save(existingUser);
+        existingUser = userRepository.save(existingUser);
+
+        logger.info(
+                "USER_UPDATED id={} user={} email={} role={}",
+                existingUser.getId(),
+                existingUser.getUsername(),
+                existingUser.getEmail(),
+                existingUser.getRole()
+        );
+
+        return existingUser;
     }
 
 
@@ -78,6 +100,18 @@ public class UserService {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found");
         }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
         userRepository.deleteById(id);
+
+        logger.info(
+                "USER_DELETED id={} user={} email={} role={}",
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }
