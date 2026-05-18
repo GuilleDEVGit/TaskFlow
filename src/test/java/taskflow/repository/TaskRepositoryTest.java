@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import taskflow.entity.Role;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static taskflow.service.Datos.*;
 
+@ActiveProfiles("test")
 @DataJpaTest
 class TaskRepositoryTest {
 

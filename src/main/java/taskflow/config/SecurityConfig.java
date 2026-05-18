@@ -44,6 +44,7 @@ public class SecurityConfig {
 
                         // ADMIN to do users y admin
                         .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/logs/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // Usuario autenticado

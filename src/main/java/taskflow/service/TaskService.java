@@ -13,25 +13,29 @@ import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
 import taskflow.dto.TaskUpdateDTO;
 import taskflow.dto.UpdateTaskStatusRequest;
-import taskflow.entity.Task;
-import taskflow.entity.TaskStatus;
-import taskflow.entity.User;
+import taskflow.entity.*;
+import taskflow.repository.ActivityLogRepository;
 import taskflow.repository.TaskRepository;
 import taskflow.repository.TaskSpecification;
 import taskflow.repository.UserRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final ActivityLogRepository  activityLogRepository;
 
     private static final Logger logger =
             LogManager.getLogger(TaskService.class);
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository,
+                       ActivityLogRepository activityLogRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.activityLogRepository = activityLogRepository;
     }
 
     //GET
@@ -74,6 +78,16 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
+        String msgLog = "Tarea creada: " + task.getTitle() + " - " + task.getDescription();
+        ActivityLog activityLog = new ActivityLog();
+          activityLog.setUsername(savedTask.getUser().getUsername());
+          activityLog.setAction(ActionType.CREATE_TASK);
+          activityLog.setDetails(msgLog);
+          activityLog.setCreatedAt(LocalDateTime.now());
+
+          activityLogRepository.save(activityLog);
+
+
         logger.info(
                 "TASK_CREATED user={} taskId={} title={} status={}",
                 username,
@@ -103,6 +117,15 @@ public class TaskService {
         existingTask.setUser(user);
 
         Task savedTask = taskRepository.save(existingTask);
+
+        String msgLog = "Tarea actualizada: " + savedTask.getTitle() + " - " + savedTask.getDescription();
+        ActivityLog activityLog = new ActivityLog();
+        activityLog.setUsername(savedTask.getUser().getUsername());
+        activityLog.setAction(ActionType.UPDATE_TASK);
+        activityLog.setDetails(msgLog);
+        activityLog.setCreatedAt(LocalDateTime.now());
+
+        activityLogRepository.save(activityLog);
 
         logger.info(
                 "TASK_UPDATED user={} taskId={} title={} status={}",
@@ -136,6 +159,13 @@ public class TaskService {
         task.setStatus(request.getStatus());
         taskRepository.save(task);
 
+        String msgLog = "Estado de la tarea actualizado: "  + task.getStatus()+ " - " + task.getTitle() + " - " + task.getDescription();
+        ActivityLog activityLog = new ActivityLog();
+        activityLog.setUsername(task.getUser().getUsername());
+        activityLog.setAction(ActionType.UPDATE_STATUS_TASK);
+        activityLog.setDetails(msgLog);
+        activityLog.setCreatedAt(LocalDateTime.now());
+
         logger.info(
                 "TASK STATUS_UPDATED user={} taskId={} title={} status={}",
                 user.getUsername(),
@@ -159,6 +189,15 @@ public class TaskService {
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         taskRepository.deleteById(taskId);
+
+        String msgLog = "Tarea eliminada: "  + task.getStatus()+ " - " + task.getTitle() + " - " + task.getDescription();
+        ActivityLog activityLog = new ActivityLog();
+        activityLog.setUsername(task.getUser().getUsername());
+        activityLog.setAction(ActionType.DELETE_TASK);
+        activityLog.setDetails(msgLog);
+        activityLog.setCreatedAt(LocalDateTime.now());
+
+        activityLogRepository.save(activityLog);
 
         logger.info(
                 "TASK_DELETED user={} taskId={} title={}",

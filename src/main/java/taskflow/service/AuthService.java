@@ -4,9 +4,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import taskflow.dto.LoginRequest;
 import taskflow.dto.LoginResponse;
+import taskflow.entity.User;
 import taskflow.security.JwtUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +27,14 @@ public class AuthService {
                        JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+    }
+
+    public User getLoggedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = new User();
+        user.setUsername(authentication.getName());
+        user.setEmail(authentication.getName());
+        return user;
     }
 
     public LoginResponse login(LoginRequest request) {

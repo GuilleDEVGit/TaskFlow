@@ -7,11 +7,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import taskflow.dto.CreateUserRequest;
 import taskflow.dto.UserOptionDTO;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.Role;
 import taskflow.entity.User;
+import taskflow.repository.ActivityLogRepository;
 import taskflow.repository.UserRepository;
 
 import java.sql.Timestamp;
@@ -24,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static taskflow.service.Datos.*;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -32,6 +35,12 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private ActivityLogRepository activityLogRepository;
 
     @InjectMocks
     private UserService userService;
@@ -68,6 +77,8 @@ class UserServiceTest {
 
         User existingUser = crearUsuario().orElseThrow();
 
+        User loggedUser = loggedUser();
+
         User updatedUser = new User();
         updatedUser.setUsername("NuevoNombre");
         updatedUser.setEmail("nuevo@email.com");
@@ -82,6 +93,8 @@ class UserServiceTest {
 
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(authService.getLoggedUser()).thenReturn(loggedUser);
 
         // Act
         User result = userService.updateUser(userId, updatedUser);
@@ -204,11 +217,15 @@ class UserServiceTest {
         Integer userId = 1;
         User user = crearUsuario().orElseThrow();
 
+        User loggedUser = loggedUser();
+
         when(userRepository.existsById(userId))
                 .thenReturn(true);
 
         when(userRepository.findById(userId))
                 .thenReturn(Optional.of(user));
+
+        when(authService.getLoggedUser()).thenReturn(loggedUser);
 
         // Act
         userService.delete(userId);

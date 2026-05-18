@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import taskflow.dto.CreateTaskRequest;
 import taskflow.dto.TaskResponse;
 import taskflow.dto.TaskUpdateDTO;
@@ -22,6 +23,7 @@ import taskflow.dto.UpdateTaskStatusRequest;
 import taskflow.entity.Task;
 import taskflow.entity.TaskStatus;
 import taskflow.entity.User;
+import taskflow.repository.ActivityLogRepository;
 import taskflow.repository.TaskRepository;
 import taskflow.repository.UserRepository;
 
@@ -36,14 +38,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static taskflow.service.Datos.*;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
 
     @Mock
-    TaskRepository taskRepository;
+    private TaskRepository taskRepository;
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Mock
+    private ActivityLogRepository activityLogRepository;
 
     @InjectMocks
     TaskService taskService;

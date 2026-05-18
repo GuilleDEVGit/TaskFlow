@@ -71,6 +71,13 @@ public class Datos {
         );
     }
 
+    public static User loggedUser(){
+        User user = new User();
+        user.setUsername("test");
+        user.setEmail("test@gmail.com");
+        return user;
+    }
+
     public static User createUser() {
         User user = new User();
         user.setUsername("testuser");
