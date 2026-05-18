@@ -166,6 +166,8 @@ public class TaskService {
         activityLog.setDetails(msgLog);
         activityLog.setCreatedAt(LocalDateTime.now());
 
+        activityLogRepository.save(activityLog);
+
         logger.info(
                 "TASK STATUS_UPDATED user={} taskId={} title={} status={}",
                 user.getUsername(),
