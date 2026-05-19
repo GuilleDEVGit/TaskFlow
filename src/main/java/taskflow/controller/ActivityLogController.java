@@ -1,6 +1,7 @@
 package taskflow.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,12 +28,14 @@ public class ActivityLogController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
     public Page<ActivityLogResponse> getActivityLogs(
+            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String username,
             @RequestParam(required = false)ActionType actionType,
             @RequestParam(required = false) String title,
+            @ParameterObject
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        return activityLogService.findAll(username,actionType,title,pageable);
+        return activityLogService.findAll(userId,username,actionType,title,pageable);
     }
 
 }

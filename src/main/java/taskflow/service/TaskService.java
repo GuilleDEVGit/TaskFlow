@@ -80,6 +80,7 @@ public class TaskService {
 
         String msgLog = "Tarea creada: " + task.getTitle() + " - " + task.getDescription();
         ActivityLog activityLog = new ActivityLog();
+          activityLog.setUserId(Long.valueOf(user.getId()));
           activityLog.setUsername(savedTask.getUser().getUsername());
           activityLog.setAction(ActionType.CREATE_TASK);
           activityLog.setDetails(msgLog);
@@ -120,6 +121,7 @@ public class TaskService {
 
         String msgLog = "Tarea actualizada: " + savedTask.getTitle() + " - " + savedTask.getDescription();
         ActivityLog activityLog = new ActivityLog();
+        activityLog.setUserId(Long.valueOf(user.getId()));
         activityLog.setUsername(savedTask.getUser().getUsername());
         activityLog.setAction(ActionType.UPDATE_TASK);
         activityLog.setDetails(msgLog);
@@ -161,6 +163,7 @@ public class TaskService {
 
         String msgLog = "Estado de la tarea actualizado: "  + task.getStatus()+ " - " + task.getTitle() + " - " + task.getDescription();
         ActivityLog activityLog = new ActivityLog();
+        activityLog.setUserId(Long.valueOf(user.getId()));
         activityLog.setUsername(task.getUser().getUsername());
         activityLog.setAction(ActionType.UPDATE_STATUS_TASK);
         activityLog.setDetails(msgLog);
@@ -185,7 +188,8 @@ public class TaskService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        String username = auth.getName();
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow();
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
@@ -194,7 +198,8 @@ public class TaskService {
 
         String msgLog = "Tarea eliminada: "  + task.getStatus()+ " - " + task.getTitle() + " - " + task.getDescription();
         ActivityLog activityLog = new ActivityLog();
-        activityLog.setUsername(task.getUser().getUsername());
+        activityLog.setUserId(Long.valueOf(user.getId()));
+        activityLog.setUsername(user.getUsername());
         activityLog.setAction(ActionType.DELETE_TASK);
         activityLog.setDetails(msgLog);
         activityLog.setCreatedAt(LocalDateTime.now());
@@ -203,7 +208,7 @@ public class TaskService {
 
         logger.info(
                 "TASK_DELETED user={} taskId={} title={}",
-                username,
+                user.getUsername(),
                 taskId,
                 task.getTitle()
 

@@ -49,7 +49,8 @@ public class UserService {
         User loggedUser = authService.getLoggedUser();
         String msgLog = "Usuario creado: " + user.getUsername() + " - " + user.getEmail();
         ActivityLog activityLog = new ActivityLog();
-        activityLog.setUsername(user.getUsername());
+        activityLog.setUserId(Long.valueOf(loggedUser.getId()));
+        activityLog.setUsername(loggedUser.getUsername());
         activityLog.setAction(ActionType.CREATE_USER);
         activityLog.setDetails(msgLog);
         activityLog.setCreatedAt(LocalDateTime.now());
@@ -82,6 +83,7 @@ public class UserService {
         User loggedUser = authService.getLoggedUser();
         String msgLog = "Usuario actualizado: " + existingUser.getUsername() + " - " + existingUser.getEmail();
         ActivityLog activityLog = new ActivityLog();
+        activityLog.setUserId(Long.valueOf(loggedUser.getId()));
         activityLog.setUsername(loggedUser.getUsername());
         activityLog.setAction(ActionType.UPDATE_USER);
         activityLog.setDetails(msgLog);
@@ -139,6 +141,7 @@ public class UserService {
         User loggedUser = authService.getLoggedUser();
         String msgLog = "Usuario eliminado: " + user.getUsername() + " - " + user.getEmail();
         ActivityLog activityLog = new ActivityLog();
+        activityLog.setUserId(Long.valueOf(loggedUser.getId()));
         activityLog.setUsername(loggedUser.getUsername());
         activityLog.setAction(ActionType.DELETE_USER);
         activityLog.setDetails(msgLog);

@@ -18,6 +18,9 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     private String username;
 
     @Enumerated(EnumType.STRING)

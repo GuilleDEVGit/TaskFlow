@@ -21,9 +21,10 @@ public class ActivityLogService {
     }
 
     //GET
-    public Page<ActivityLogResponse> findAll(String username, ActionType actionType, String title, Pageable pageable) {
+    public Page<ActivityLogResponse> findAll(Long userId, String username, ActionType actionType, String title, Pageable pageable) {
 
         Specification<ActivityLog> spec = Specification.allOf(
+                ActivityLogSpecification.hasUserId(userId),
                 ActivityLogSpecification.hasUsername(username),
                 ActivityLogSpecification.hasActionType(actionType),
                 ActivityLogSpecification.titleContains(title)
@@ -33,6 +34,7 @@ public class ActivityLogService {
 
        return activityLogsPage.map(activityLog -> new ActivityLogResponse(
                 activityLog.getId(),
+                activityLog.getUserId(),
                 activityLog.getUsername(),
                 activityLog.getAction(),
                 activityLog.getDetails(),
